@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       create_release:
-        description: 'Создать GitHub Release'
+        description: 'GitHub Release'
         required: false
         default: 'false'
         type: boolean
