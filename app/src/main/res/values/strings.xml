@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OpenEljur</string>
+    <string name="auth_subtitle">Школьный дневник</string>
+    <string name="auth_username">Логин</string>
+    <string name="auth_password">Пароль</string>
+    <string name="auth_school">Школа (vendor)</string>
+    <string name="auth_submit">Войти</string>
+    <string name="auth_error">Ошибка входа</string>
+
+    <string name="nav_diary">Дневник</string>
+    <string name="nav_marks">Оценки</string>
+    <string name="nav_messages">Сообщения</string>
+    <string name="nav_settings">Настройки</string>
+    <string name="nav_logout">Выйти</string>
+
+    <string name="common_loading">Загрузка…</string>
+    <string name="common_no_data">Нет данных</string>
+    <string name="common_cancel">Отмена</string>
+    <string name="common_close">Закрыть</string>
+    <string name="common_retry">Повторить</string>
+    <string name="common_today">Сегодня</string>
+    <string name="common_no_network">Нет подключения к сети</string>
+    <string name="common_ok">OK</string>
+    <string name="common_show_more">Показать полностью</string>
+    <string name="common_show_less">Свернуть</string>
+
+    <string name="diary_title">Дневник</string>
+    <string name="diary_homework">ДЗ</string>
+    <string name="diary_no_homework">Без задания</string>
+    <string name="diary_no_lessons">Нет уроков</string>
+    <string name="diary_weekend">Выходной</string>
+    <string name="diary_vacation">Каникулы</string>
+    <string name="diary_prev_week">Предыдущая неделя</string>
+    <string name="diary_next_week">Следующая неделя</string>
+
+    <string name="marks_title">Оценки</string>
+    <string name="marks_average">Ср.</string>
+    <string name="marks_no_marks">Нет оценок</string>
+    <string name="marks_q1">1 четв.</string>
+    <string name="marks_q2">2 четв.</string>
+    <string name="marks_q3">3 четв.</string>
+    <string name="marks_q4">4 четв.</string>
+    <string name="marks_comment_title">Комментарий к оценке</string>
+    <string name="marks_mark_value">Оценка</string>
+    <string name="marks_mark_date">Дата</string>
+    <string name="marks_comment">Комментарий</string>
+    <string name="marks_lesson_comment">Комментарий к уроку</string>
+
+    <string name="messages_title">Сообщения</string>
+    <string name="messages_inbox">Полученные</string>
+    <string name="messages_sent">Отправленные</string>
+    <string name="messages_compose">Написать</string>
+    <string name="messages_reply">Ответить</string>
+    <string name="messages_send">Отправить</string>
+    <string name="messages_subject">Тема</string>
+    <string name="messages_body">Сообщение</string>
+    <string name="messages_from">От</string>
+    <string name="messages_date">Дата</string>
+    <string name="messages_unread_only">Непрочитанные</string>
+    <string name="messages_load_more">Загрузить ещё</string>
+    <string name="messages_sent_ok">Сообщение отправлено</string>
+    <string name="messages_send_failed">Не удалось отправить</string>
+    <string name="messages_recipients">Получатели (через запятую)</string>
+    <string name="messages_files">Файлы</string>
+    <string name="messages_no_messages">Нет сообщений</string>
+    <string name="messages_message">Сообщение</string>
+
+    <string name="settings_title">Настройки</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_theme_system">Системная</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Тёмная</string>
+    <string name="settings_logout">Выйти из аккаунта</string>
+    <string name="settings_logout_confirm">Вы уверены, что хотите выйти?</string>
+    <string name="settings_api_url">URL сервера</string>
+    <string name="settings_version">Версия</string>
+    <string name="messages_add_attachment">Прикрепить файл</string>
+    <string name="messages_add_recipient">Добавить получателя</string>
+    <string name="common_search">Поиск...</string>
+    <string name="error_empty_response">Пустой ответ сервера</string>
+</resources>
