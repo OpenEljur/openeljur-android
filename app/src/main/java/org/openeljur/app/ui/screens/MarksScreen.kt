@@ -36,6 +36,8 @@ fun MarksScreen(vm: MarksViewModel = viewModel()) {
 
     LaunchedEffect(Unit) { vm.load() }
 
+    val pullState = rememberPullToRefreshState()
+
     Scaffold(
         topBar = {
             TopAppBar(title = {
@@ -55,20 +57,30 @@ fun MarksScreen(vm: MarksViewModel = viewModel()) {
                 }
             }
 
-            Box(Modifier.fillMaxSize()) {
+            PullToRefreshBox(
+                isRefreshing = isLoading,
+                onRefresh = { vm.load() },
+                state = pullState,
+                modifier = Modifier.fillMaxSize()
+            ) {
                 when {
-                    isLoading && lessons.isEmpty() -> CircularProgressIndicator(Modifier.align(Alignment.Center))
-                    error != null && lessons.isEmpty() -> Column(
-                        Modifier.align(Alignment.Center).padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(error!!, color = MaterialTheme.colorScheme.error)
-                        Spacer(Modifier.height(8.dp))
-                        Button(onClick = { vm.load() }) { Text(stringResource(R.string.common_retry)) }
+                    isLoading && lessons.isEmpty() -> Box(Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(Modifier.align(Alignment.Center))
+                    }
+                    error != null && lessons.isEmpty() -> Box(Modifier.fillMaxSize()) {
+                        Column(
+                            Modifier.align(Alignment.Center).padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(error!!, color = MaterialTheme.colorScheme.error)
+                            Spacer(Modifier.height(8.dp))
+                            Button(onClick = { vm.load() }) { Text(stringResource(R.string.common_retry)) }
+                        }
                     }
                     else -> LazyColumn(
                         contentPadding = PaddingValues(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.fillMaxSize()
                     ) {
                         items(lessons, key = { it.name ?: "" }) { lesson ->
                             SubjectCard(lesson, onMarkClick = { selectedMark = it })

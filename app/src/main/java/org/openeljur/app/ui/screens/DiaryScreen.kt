@@ -42,6 +42,8 @@ fun DiaryScreen(vm: DiaryViewModel = viewModel()) {
     val weekLabel by vm.weekLabel.collectAsStateWithLifecycle()
     var selectedMark by remember { mutableStateOf<Mark?>(null) }
 
+    val pullState = rememberPullToRefreshState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -58,20 +60,30 @@ fun DiaryScreen(vm: DiaryViewModel = viewModel()) {
             )
         }
     ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
+        PullToRefreshBox(
+            isRefreshing = isLoading,
+            onRefresh = { vm.load() },
+            state = pullState,
+            modifier = Modifier.fillMaxSize().padding(padding)
+        ) {
             when {
-                isLoading && days.isEmpty() -> CircularProgressIndicator(Modifier.align(Alignment.Center))
-                error != null && days.isEmpty() -> Column(
-                    Modifier.align(Alignment.Center).padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(error!!, color = MaterialTheme.colorScheme.error)
-                    Spacer(Modifier.height(8.dp))
-                    Button(onClick = { vm.load() }) { Text(stringResource(R.string.common_retry)) }
+                isLoading && days.isEmpty() -> Box(Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                }
+                error != null && days.isEmpty() -> Box(Modifier.fillMaxSize()) {
+                    Column(
+                        Modifier.align(Alignment.Center).padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(error!!, color = MaterialTheme.colorScheme.error)
+                        Spacer(Modifier.height(8.dp))
+                        Button(onClick = { vm.load() }) { Text(stringResource(R.string.common_retry)) }
+                    }
                 }
                 else -> LazyColumn(
                     contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     items(days, key = { it.key }) { entry ->
                         DayCard(entry.key, entry.day, onMarkClick = { selectedMark = it })

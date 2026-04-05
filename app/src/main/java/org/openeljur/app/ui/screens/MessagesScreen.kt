@@ -31,6 +31,8 @@ fun MessagesScreen(navController: NavController, vm: MessagesViewModel = viewMod
     val folder by vm.folder.collectAsStateWithLifecycle()
     val unreadOnly by vm.unreadOnly.collectAsStateWithLifecycle()
 
+    val pullState = rememberPullToRefreshState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -59,21 +61,34 @@ fun MessagesScreen(navController: NavController, vm: MessagesViewModel = viewMod
                     text = { Text(stringResource(R.string.messages_sent)) })
             }
 
-            Box(Modifier.fillMaxSize()) {
+            PullToRefreshBox(
+                isRefreshing = isLoading,
+                onRefresh = { vm.load() },
+                state = pullState,
+                modifier = Modifier.fillMaxSize()
+            ) {
                 when {
-                    isLoading && messages.isEmpty() -> CircularProgressIndicator(Modifier.align(Alignment.Center))
-                    error != null && messages.isEmpty() -> Column(
-                        Modifier.align(Alignment.Center).padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(error!!, color = MaterialTheme.colorScheme.error)
-                        Spacer(Modifier.height(8.dp))
-                        Button(onClick = { vm.load() }) { Text(stringResource(R.string.common_retry)) }
+                    isLoading && messages.isEmpty() -> Box(Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(Modifier.align(Alignment.Center))
                     }
-                    messages.isEmpty() -> Text(stringResource(R.string.messages_no_messages),
-                        Modifier.align(Alignment.Center),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    else -> LazyColumn {
+                    error != null && messages.isEmpty() -> Box(Modifier.fillMaxSize()) {
+                        Column(
+                            Modifier.align(Alignment.Center).padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(error!!, color = MaterialTheme.colorScheme.error)
+                            Spacer(Modifier.height(8.dp))
+                            Button(onClick = { vm.load() }) { Text(stringResource(R.string.common_retry)) }
+                        }
+                    }
+                    messages.isEmpty() -> Box(Modifier.fillMaxSize()) {
+                        Text(
+                            stringResource(R.string.messages_no_messages),
+                            Modifier.align(Alignment.Center),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    else -> LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(messages, key = { it.id ?: "" }) { msg ->
                             ListItem(
                                 headlineContent = {
