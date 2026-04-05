@@ -90,6 +90,6 @@ jobs:
           draft: false
           prerelease: false
           files: app/build/outputs/apk/release/*.apk
-          generate_release_notes: true
+          generate_release_notes: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
