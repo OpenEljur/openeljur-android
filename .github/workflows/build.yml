@@ -32,11 +32,14 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Write local.properties
+        env:
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          DEFAULT_SCHOOL_ID: ${{ secrets.DEFAULT_SCHOOL_ID }}
         run: |
           cat > local.properties << EOF
           sdk.dir=$ANDROID_SDK_ROOT
-          API_BASE_URL=${{ secrets.API_BASE_URL || 'https://openeljur-api.vercel.app' }}
-          DEFAULT_SCHOOL_ID=${{ secrets.DEFAULT_SCHOOL_ID || 'eljur' }}
+          API_BASE_URL=${API_BASE_URL:-https://openeljur-api.vercel.app}
+          DEFAULT_SCHOOL_ID=${DEFAULT_SCHOOL_ID:-eljur}
           EOF
 
       - name: Grant execute permission for gradlew
@@ -49,13 +52,17 @@ jobs:
         run: ./gradlew assembleRelease --no-daemon
 
       - name: Sign APK
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        if: ${{ vars.SIGN_APK == 'true' }}
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "KEYSTORE_BASE64 not set, skipping signing"
+            exit 0
+          fi
           echo "$KEYSTORE_BASE64" | base64 --decode > keystore.jks
           $ANDROID_SDK_ROOT/build-tools/$(ls $ANDROID_SDK_ROOT/build-tools | tail -1)/apksigner sign \
             --ks keystore.jks \
