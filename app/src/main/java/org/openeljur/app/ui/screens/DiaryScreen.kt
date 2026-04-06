@@ -1,6 +1,7 @@
 package org.openeljur.app.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -248,27 +249,29 @@ fun LessonRow(item: DiaryItem, onMarkClick: (Mark) -> Unit) {
             }
 
             // ДЗ с expand/collapse
-            Column {
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(
-                        "$hwLabel:",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        homeworkText ?: noHwLabel,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = if (expanded) Int.MAX_VALUE else 2
-                    )
-                }
-                if (isLongHomework) {
-                    Text(
-                        if (expanded) showLessLabel else showMoreLabel,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.clickable { expanded = !expanded }
-                    )
+            SelectionContainer {
+                Column {
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            "$hwLabel:",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            homeworkText ?: noHwLabel,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = if (expanded) Int.MAX_VALUE else 2
+                        )
+                    }
+                    if (isLongHomework) {
+                        Text(
+                            if (expanded) showLessLabel else showMoreLabel,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.clickable { expanded = !expanded }
+                        )
+                    }
                 }
             }
 

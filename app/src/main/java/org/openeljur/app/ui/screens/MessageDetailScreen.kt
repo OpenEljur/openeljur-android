@@ -3,6 +3,8 @@ package org.openeljur.app.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Reply
@@ -11,8 +13,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -20,6 +27,8 @@ import androidx.navigation.NavController
 import org.openeljur.app.R
 import org.openeljur.app.ui.Screen
 import org.openeljur.app.viewmodel.MessagesViewModel
+
+private val URL_REGEX = Regex("""https?://[^\s<>"]+""")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +67,9 @@ fun MessageDetailScreen(messageId: String, navController: NavController, vm: Mes
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                Text(message.subject ?: "...", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                SelectionContainer {
+                    Text(message.subject ?: "...", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                }
             }
             item {
                 Card {
@@ -77,27 +88,60 @@ fun MessageDetailScreen(messageId: String, navController: NavController, vm: Mes
                 item { Text(stringResource(R.string.messages_files), style = MaterialTheme.typography.labelLarge) }
                 items(files) { file ->
                     OutlinedCard(onClick = {
-                        file.link?.let { link ->
-                            downloadFile(context, link, file.filename)
-                        }
+                        file.link?.let { link -> downloadFile(context, link, file.filename) }
                     }) {
                         Row(Modifier.fillMaxWidth().padding(12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween) {
                             Text(file.filename ?: file.link ?: "",
                                 style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier.weight(1f))
-                            Icon(Icons.Default.Download, stringResource(R.string.common_close),
-                                tint = MaterialTheme.colorScheme.primary)
+                            Icon(Icons.Default.Download, null, tint = MaterialTheme.colorScheme.primary)
                         }
                     }
                 }
             }
 
             item {
-                Text(stripHtml(message.text ?: message.short_text ?: ""),
-                    style = MaterialTheme.typography.bodyMedium)
+                val bodyText = stripHtml(message.text ?: message.short_text ?: "")
+                LinkifyText(text = bodyText, style = MaterialTheme.typography.bodyMedium)
             }
         }
+    }
+}
+
+@Composable
+fun LinkifyText(text: String, style: TextStyle = TextStyle.Default) {
+    val uriHandler = LocalUriHandler.current
+    val linkColor = MaterialTheme.colorScheme.primary
+
+    val annotated = remember(text) {
+        buildAnnotatedString {
+            append(text)
+            URL_REGEX.findAll(text).forEach { match ->
+                addStyle(
+                    style = SpanStyle(color = linkColor, textDecoration = TextDecoration.Underline),
+                    start = match.range.first,
+                    end = match.range.last + 1
+                )
+                addStringAnnotation(
+                    tag = "URL",
+                    annotation = match.value,
+                    start = match.range.first,
+                    end = match.range.last + 1
+                )
+            }
+        }
+    }
+
+    SelectionContainer {
+        ClickableText(
+            text = annotated,
+            style = style.copy(color = MaterialTheme.colorScheme.onSurface),
+            onClick = { offset ->
+                annotated.getStringAnnotations("URL", offset, offset)
+                    .firstOrNull()?.let { uriHandler.openUri(it.item) }
+            }
+        )
     }
 }
 
